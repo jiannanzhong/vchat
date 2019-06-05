@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>聊天</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link rel="shortcut icon" href="${pageContext.request.contextPath}/ico/favicon.ico">
+    <link rel="stylesheet" href="https://cdn.bootcss.com/twitter-bootstrap/3.4.1/css/bootstrap.min.css">
+    <script src="https://cdn.bootcss.com/jquery/1.12.4/jquery.min.js"></script>
+    <script src="https://cdn.bootcss.com/twitter-bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    <style type="text/css">
+        #clearBtn, #loginBtn, #sendMsgBtn {
+            width: 90%;
+            height: 100%;
+        }
+
+        label.control-label {
+            padding-bottom: 0.3em;
+            padding-left: 0.2em;
+        }
+
+        .glyphicon {
+            margin-top: 0.4em;
+        }
+    </style>
+
+    <script type="text/javascript">
+        var logging = false;
+        var userID = '';
+        var uuid = '';
+        var getMsgStatus = 0;
+        var checkingMsg = false;
+
+        $(function () {
+            $('#loginBtn').click(function () {
+                if (logging) {
+                    return;
+                }
+                logging = true;
+                var username = $('#username');
+                var userInput = username.val();
+                var that = this;
+                $('#unameFG').removeClass('has-error').removeClass('has-success');
+                $('#unameICO').removeClass('glyphicon-ok').removeClass('glyphicon-remove');
+                $.ajax({
+                    url: '/vchat/login',
+                    type: 'POST',
+                    dataType: 'json',
+                    data: {userId: userInput},
+                    success: function (data, status, xhr) {
+                        if (data['code'] === 0) {
+                            username.prop('disabled', true);
+                            $(that).prop('disabled', true);
+                            $('#unameFG').addClass('has-success');
+                            $('#unameICO').addClass('glyphicon-ok');
+                            userID = userInput;
+                            uuid = data['uuid'];
+                            $('#info').text(userInput);
+                        } else {
+                            logging = false;
+                            $('#unameFG').addClass('has-error');
+                            $('#unameICO').addClass('glyphicon-remove');
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        logging = false;
+                    }
+                });
+            });
+
+            $('#sendMsgBtn').click(function () {
+                var sendMsg = $('#msg').val();
+                var id2 = $('#id2').val();
+                if (sendMsg.length === 0 || id2.length === 0) {
+                    return;
+                }
+
+                $.ajax({
+                    url: '/vchat/post',
+                    type: 'POST',
+                    dataType: 'json',
+                    data: {
+                        uid: userID,
+                        uuid: uuid,
+                        id2: id2,
+                        msg: sendMsg
+                    },
+                    success: function (data, status, xhr) {
+                        if (data['code'] === 0) {
+                            printMsg(sendMsg, 2);
+                            $('#msg').val('');
+                        } else {
+                            printMsg('发送失败', 2);
+                        }
+                    },
+                    error: function (xhr, status, error) {
+
+                    }
+                })
+            });
+
+            $('#clearBtn').click(function () {
+                $('#msgBox').empty();
+            });
+
+            setInterval(function () {
+                var id2 = $('#id2').val();
+                if (checkingMsg || id2.length === 0) {
+                    return;
+                }
+
+                checkingMsg = true;
+                if (getMsgStatus === 0) {
+                    $.ajax({
+                        url: '/vchat/get',
+                        type: 'GET',
+                        dataType: 'json',
+                        data: {
+                            uid: userID,
+                            uuid: uuid,
+                            id2: id2
+                        },
+                        success: function (data, status, xhr) {
+                            var list = data['chat_list'];
+                            for (var i = 0; i < list.length; i++) {
+                                printMsg(list[i]['message'], 1);
+                            }
+                            getMsgStatus = 1;
+                            checkingMsg = false;
+                        },
+                        error: function (xhr, status, error) {
+                            checkingMsg = false;
+                        }
+                    });
+                } else {
+                    $.ajax({
+                        url: '/vchat/clearMsg',
+                        type: 'GET',
+                        dataType: 'json',
+                        data: {
+                            uid: userID,
+                            uuid: uuid
+                        },
+                        success: function (data, status, xhr) {
+                            if (data['code'] === 0) {
+                                getMsgStatus = 0;
+                            }
+                            checkingMsg = false;
+                        },
+                        error: function (xhr, status, error) {
+                            checkingMsg = false;
+                        }
+                    })
+                }
+            }, 1000);
+
+        });
+
+        function printMsg(text, type) {
+            var class_tx = 'text-left';
+            if (type === 2) {
+                class_tx = 'text-right';
+            }
+            $('#msgBox').append(
+                $('<tr></tr>').addClass(class_tx).append(
+                    $('<td></td>').text(text)
+                )
+            );
+        }
+    </script>
+</head>
+<body>
+<div class="container">
+    <div class="row">
+        <div style="height: 3em;"></div>
+    </div>
+
+    <div class="row text-center">
+        <h2 id="info">聊天客户端</h2>
+    </div>
+
+    <div class="row">
+        <div class="col-sm-3 col-xs-1"></div>
+        <div class="col-sm-6 col-xs-10">
+            <form action="" class="form-horizontal">
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th>消息</th>
+                    </tr>
+                    </thead>
+                    <tbody id="msgBox">
+                    <tr class="text-right">
+                        <td>消息。。。</td>
+                    </tr>
+                    </tbody>
+                </table>
+
+                <div id="unameFG" class="form-group has-feedback">
+                    <label id="unameLabel" for="username" class="control-label">用户名</label>
+                    <input type="text" class="form-control" id="username" autocomplete="off" maxlength="10">
+                    <span id="unameICO" class="glyphicon form-control-feedback" aria-hidden="true"></span>
+                </div>
+
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-sm-2 col-xs-1"></div>
+                        <div class="col-sm-4 col-xs-5">
+                            <button id="loginBtn" type="button" class="btn btn-success">登录</button>
+                        </div>
+                        <div class="col-sm-4 col-xs-5">
+                            <button id="clearBtn" type="button" class="btn btn-info">清空聊天</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="id2">接收ID</label>
+                    <input type="text" class="form-control" id="id2" autocomplete="off">
+
+                    <label for="msg">发消息..</label>
+                    <input type="text" class="form-control" id="msg" autocomplete="off">
+                </div>
+
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-sm-2 col-xs-1"></div>
+                        <div class="col-sm-8 col-xs-10">
+                            <button id="sendMsgBtn" type="button" class="btn btn-primary">发送</button>
+                        </div>
+                    </div>
+                </div>
+
+            </form>
+        </div>
+    </div>
+</div>
+</body>
+</html>
