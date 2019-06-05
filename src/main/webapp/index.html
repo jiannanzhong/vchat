@@ -71,11 +71,14 @@
             });
 
             $('#sendMsgBtn').click(function () {
-                var sendMsg = $('#msg').val();
+                var msgObj = $('#msg');
+                var sendMsg = msgObj.val();
                 var id2 = $('#id2').val();
                 if (sendMsg.length === 0 || id2.length === 0) {
                     return;
                 }
+
+                msgObj.val('');
 
                 $.ajax({
                     url: '/vchat/post',
@@ -90,7 +93,6 @@
                     success: function (data, status, xhr) {
                         if (data['code'] === 0) {
                             printMsg(sendMsg, 2);
-                            $('#msg').val('');
                         } else {
                             printMsg('发送失败', 2);
                         }
@@ -192,9 +194,6 @@
                     </tr>
                     </thead>
                     <tbody id="msgBox">
-                    <tr class="text-right">
-                        <td>消息。。。</td>
-                    </tr>
                     </tbody>
                 </table>
 
