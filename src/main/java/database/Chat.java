@@ -56,12 +56,14 @@ public class Chat {
     }
 
     private static void setUserLastChatsByUid(String uid, ArrayList<String> lastChats) {
+        //System.out.println("set " + lastChats.toString());
         modChatUUIDList(uid, lastChats, 1);
     }
 
     public static void removeUserLastChatsByUid(String uid) {
         ArrayList<String> chatUUIDList = modChatUUIDList(uid, null, 2);
         modList(null, null, null, chatUUIDList, 4);
+        //System.out.println("remove " + chatUUIDList.toString());
         modChatUUIDList(uid, null, 1);
     }
 

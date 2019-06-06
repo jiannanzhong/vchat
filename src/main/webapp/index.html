@@ -32,6 +32,8 @@
         var uuid = '';
         var getMsgStatus = 0;
         var checkingMsg = false;
+        var checkMsgAjax;
+        var id2 = '';
 
         $(function () {
             $('#username').focus();
@@ -85,7 +87,6 @@
                 var msgObj = $('#msg');
                 msgObj.focus();
                 var sendMsg = msgObj.val();
-                var id2 = $('#id2').val();
                 if (sendMsg.length === 0 || id2.length === 0) {
                     return;
                 }
@@ -122,15 +123,21 @@
                 $('#msgBox').empty();
             });
 
+            $('#id2').change(function () {
+                id2 = $(this).val();
+                if (checkMsgAjax != null) {
+                    checkMsgAjax.abort();
+                }
+            });
+
             setInterval(function () {
-                var id2 = $('#id2').val();
                 if (userID.length === 0 || uuid.length === 0 || checkingMsg || id2.length === 0) {
                     return;
                 }
 
                 checkingMsg = true;
                 if (getMsgStatus === 0) {
-                    $.ajax({
+                    checkMsgAjax = $.ajax({
                         url: '/vchat/get',
                         type: 'GET',
                         dataType: 'json',
