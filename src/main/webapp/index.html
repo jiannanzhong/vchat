@@ -34,12 +34,15 @@
         var checkingMsg = false;
 
         $(function () {
+            $('#username').focus();
+
             $('#loginBtn').click(function () {
+                var username = $('#username');
+                username.focus();
                 if (logging) {
                     return;
                 }
                 logging = true;
-                var username = $('#username');
                 var userInput = username.val();
                 var that = this;
                 $('#unameFG').removeClass('has-error').removeClass('has-success');
@@ -58,6 +61,7 @@
                             userID = userInput;
                             uuid = data['uuid'];
                             $('#info').text(userInput);
+                            $('#id2').focus();
                         } else {
                             logging = false;
                             $('#unameFG').addClass('has-error');
@@ -70,15 +74,20 @@
                 });
             });
 
+            $('#msg').keydown(function (event) {
+                if (event.keyCode === 13) {
+                    $('#sendMsgBtn').click();
+                }
+            });
+
             $('#sendMsgBtn').click(function () {
                 var msgObj = $('#msg');
+                msgObj.focus();
                 var sendMsg = msgObj.val();
                 var id2 = $('#id2').val();
                 if (sendMsg.length === 0 || id2.length === 0) {
                     return;
                 }
-
-                msgObj.val('');
 
                 $.ajax({
                     url: '/vchat/post',
@@ -93,6 +102,7 @@
                     success: function (data, status, xhr) {
                         if (data['code'] === 0) {
                             printMsg(sendMsg, 2);
+                            msgObj.val('');
                         } else {
                             printMsg('发送失败', 2);
                         }
@@ -102,6 +112,7 @@
                     }
                 })
             });
+
 
             $('#clearBtn').click(function () {
                 $('#msgBox').empty();
@@ -170,6 +181,12 @@
                     $('<td></td>').text(text)
                 )
             );
+            scrollToBottom();
+            $('#msg').focus();
+        }
+
+        function scrollToBottom() {
+            $('html,body').animate({scrollTop: $('.bottom').offset().top}, 10);
         }
     </script>
 </head>
@@ -236,5 +253,6 @@
         </div>
     </div>
 </div>
+<div class="box bottom"></div>
 </body>
 </html>
