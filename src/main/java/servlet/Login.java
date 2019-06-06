@@ -36,7 +36,7 @@ public class Login extends HttpServlet {
         int code = 1001;
         String message = "fail";
         String uuid = "";
-        if (!MyStringUtil.empty(uid)) {
+        if (!MyStringUtil.empty(uid) && !uid.contains("|")) {
             uuid = User.login(uid);
             code = 0;
             message = "ok";

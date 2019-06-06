@@ -1,16 +1,45 @@
 package database;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.Map.Entry;
-
 import bean.ChatBean;
 import core.MyUUID;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map.Entry;
 
 public class Chat {
     private static final HashMap<String, ChatBean> chatDataList = new HashMap<>();
     private static final HashMap<String, ArrayList<String>> userLastGetChats = new HashMap<>();
+    private static final HashMap<String, String> getMsgSignature = new HashMap<>();
+
+    public static String renewSign(String id1, String id2) {
+        return modMsgSignature(id1 + "|" + id2, 1);
+    }
+
+    public static String getSign(String id1, String id2) {
+        return modMsgSignature(id1 + "|" + id2, 2);
+    }
+
+    public static boolean checkSign(String id1, String id2, String uuid) {
+        return uuid.equals(modMsgSignature(id1 + "|" + id2, 2));
+    }
+
+    private static synchronized String modMsgSignature(String id1_id2, int operationType) {
+        // 1. 修改uuid并返回
+        // 2. 不修改，直接返回uuid
+        String uuid = null;
+        switch (operationType) {
+            case 1:
+                uuid = MyUUID.createUUID();
+                getMsgSignature.put(id1_id2, uuid);
+                break;
+            case 2:
+                uuid = getMsgSignature.get(id1_id2);
+                break;
+            default:
+        }
+        return uuid;
+    }
 
     public static void addChat(ChatBean ctb) {
         if (ctb != null) {
@@ -22,11 +51,11 @@ public class Chat {
         return modList(id1, id2, null, null, 2);
     }
 
-    public static void removeAllChatsByUid(String uid) {
+    static void removeAllChatsByUid(String uid) {
         Chat.modList(null, uid, null, null, 3);
     }
 
-    public static void setUserLastChatsByUid(String uid, ArrayList<String> lastChats) {
+    private static void setUserLastChatsByUid(String uid, ArrayList<String> lastChats) {
         modChatUUIDList(uid, lastChats, 1);
     }
 
@@ -40,8 +69,8 @@ public class Chat {
         modChatUUIDList(uid, null, 1);
     }
 
-    public static synchronized ArrayList<String> modChatUUIDList(String uid, ArrayList<String> lastChats,
-                                                                 int operationType) {
+    private static synchronized ArrayList<String> modChatUUIDList(String uid, ArrayList<String> lastChats,
+                                                                  int operationType) {
         // 1. 设置lastChats
         // 2. 获取lastChats
         ArrayList<String> lastChatsData = null;
@@ -64,8 +93,8 @@ public class Chat {
         return lastChatsData;
     }
 
-    public static synchronized ArrayList<ChatBean> modList(String id1, String id2, ChatBean ctb,
-                                                           ArrayList<String> chatUUIDList, int operationType) {
+    static synchronized ArrayList<ChatBean> modList(String id1, String id2, ChatBean ctb,
+                                                    ArrayList<String> chatUUIDList, int operationType) {
         // 1. 增加聊天，uid为空，ctb为有效
         // 2. 拉取某个uid要接收的信息，uid有效，ctb为空
         // 3. 删除某个uid的所有相关信息，uid有效，ctb为空
@@ -87,12 +116,7 @@ public class Chat {
                         list.add(entry.getKey());
                     }
                 }
-                chatList.sort(new Comparator<ChatBean>() {
-                    @Override
-                    public int compare(ChatBean o1, ChatBean o2) {
-                        return (int) (o1.getTime() - o2.getTime());
-                    }
-                });
+                chatList.sort((o1, o2) -> (int) (o1.getTime() - o2.getTime()));
                 setUserLastChatsByUid(id2, list);
                 break;
             case 3:

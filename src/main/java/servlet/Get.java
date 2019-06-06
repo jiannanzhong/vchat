@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import core.AppSettings;
 import database.Chat;
 import database.User;
 import bean.ChatBean;
@@ -49,16 +50,25 @@ public class Get extends HttpServlet {
             invalid = true;
         }
         if (!invalid) {
-
             if (!User.verifyUser(uid, uuid)) {
-                code = 1002;
+                code = 1009;
                 invalid = true;
             }
         }
         if (invalid) {
             message = "fail";
         } else {
-            chatList = Chat.getChatByUid(id2, uid);
+            String sign = Chat.renewSign(id2, uid);
+            while (AppSettings.APP_RUNNING && (chatList = Chat.getChatByUid(id2, uid)).size() == 0) {
+                try {
+                    Thread.sleep(800);
+                } catch (Exception e) {
+                    //
+                }
+            }
+            if (!Chat.checkSign(id2, uid, sign)) {
+                chatList = new ArrayList<>();
+            }
         }
         json.put("code", code);
         json.put("msg", message);

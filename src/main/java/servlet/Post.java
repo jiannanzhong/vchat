@@ -48,7 +48,7 @@ public class Post extends HttpServlet {
         }
         if (!invalid) {
             if (!User.verifyUser(uid, uuid)) {
-                code = 1002;
+                code = 1009;
                 invalid = true;
             }
         }
