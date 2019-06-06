@@ -205,16 +205,6 @@
         <div class="col-sm-3 col-xs-1"></div>
         <div class="col-sm-6 col-xs-10">
             <form action="" class="form-horizontal">
-                <table class="table">
-                    <thead>
-                    <tr>
-                        <th>消息</th>
-                    </tr>
-                    </thead>
-                    <tbody id="msgBox">
-                    </tbody>
-                </table>
-
                 <div id="unameFG" class="form-group has-feedback">
                     <label id="unameLabel" for="username" class="control-label">用户名</label>
                     <input type="text" class="form-control" id="username" autocomplete="off" maxlength="10">
@@ -224,14 +214,21 @@
                 <div class="form-group">
                     <div class="row">
                         <div class="col-sm-2 col-xs-1"></div>
-                        <div class="col-sm-4 col-xs-5">
+                        <div class="col-sm-8 col-xs-10">
                             <button id="loginBtn" type="button" class="btn btn-success">登录</button>
-                        </div>
-                        <div class="col-sm-4 col-xs-5">
-                            <button id="clearBtn" type="button" class="btn btn-info">清空聊天</button>
                         </div>
                     </div>
                 </div>
+
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th>消息</th>
+                    </tr>
+                    </thead>
+                    <tbody id="msgBox">
+                    </tbody>
+                </table>
 
                 <div class="form-group">
                     <label for="id2">接收ID</label>
@@ -244,8 +241,11 @@
                 <div class="form-group">
                     <div class="row">
                         <div class="col-sm-2 col-xs-1"></div>
-                        <div class="col-sm-8 col-xs-10">
+                        <div class="col-sm-4 col-xs-5">
                             <button id="sendMsgBtn" type="button" class="btn btn-primary">发送</button>
+                        </div>
+                        <div class="col-sm-4 col-xs-5">
+                            <button id="clearBtn" type="button" class="btn btn-info">清空聊天</button>
                         </div>
                     </div>
                 </div>
