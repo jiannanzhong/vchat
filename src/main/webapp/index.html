@@ -137,6 +137,7 @@
 
                 checkingMsg = true;
                 if (getMsgStatus === 0) {
+                	var timestamp = (new Date()).valueOf();
                     checkMsgAjax = $.ajax({
                         url: '/vchat/get',
                         type: 'GET',
@@ -144,7 +145,8 @@
                         data: {
                             uid: userID,
                             uuid: uuid,
-                            id2: id2
+                            id2: id2,
+                            t: timestamp
                         },
                         success: function (data, status, xhr) {
                             if (data['code'] === 0) {
