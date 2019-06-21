@@ -1,19 +1,18 @@
 package servlet;
 
-import java.io.IOException;
+import bean.ChatBean;
+import core.MyStringUtil;
+import core.TimeUtil;
+import database.Chat;
+import database.User;
+import net.sf.json.JSONObject;
+
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import database.Chat;
-import database.User;
-import bean.ChatBean;
-import bean.UserBean;
-import core.MyStringUtil;
-import core.TimeUtil;
-import net.sf.json.JSONObject;
+import java.io.IOException;
 
 /**
  * Servlet implementation class Post

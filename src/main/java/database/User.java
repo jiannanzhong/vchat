@@ -1,13 +1,13 @@
 package database;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-
 import bean.UserBean;
 import core.AppSettings;
 import core.MyUUID;
 import core.TimeUtil;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 public class User {
     private static final HashMap<String, UserBean> idActiveList = new HashMap<>();

@@ -13,6 +13,11 @@ import java.io.IOException;
 
 @WebServlet("/keep")
 public class Keep extends HttpServlet {
+    /**
+     *
+     */
+    private static final long serialVersionUID = 1L;
+
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         request.setCharacterEncoding("utf-8");
         response.setCharacterEncoding("utf-8");

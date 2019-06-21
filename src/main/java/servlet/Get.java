@@ -1,22 +1,20 @@
 package servlet;
 
-import java.io.IOException;
-import java.util.ArrayList;
+import bean.ChatBean;
+import core.AppSettings;
+import core.MyStringUtil;
+import database.Chat;
+import database.User;
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import core.AppSettings;
-import database.Chat;
-import database.User;
-import bean.ChatBean;
-import bean.UserBean;
-import core.MyStringUtil;
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
+import java.io.IOException;
+import java.util.ArrayList;
 
 /**
  * Servlet implementation class Get
@@ -75,6 +73,7 @@ public class Get extends HttpServlet {
         json.put("chat_list", JSONArray.fromObject(chatList));
         response.getWriter().write(json.toString());
         response.setHeader("Access-Control-Allow-Headers", "*");
+        response.setHeader("cache-control", "no-cache, no-store");
     }
 
 }
