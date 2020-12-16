@@ -19,7 +19,7 @@ import java.util.ArrayList;
 /**
  * Servlet implementation class Get
  */
-@WebServlet("/get")
+@WebServlet("/get/*")
 public class Get extends HttpServlet {
     private static final long serialVersionUID = 1L;
 

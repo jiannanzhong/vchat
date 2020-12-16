@@ -139,7 +139,7 @@
                 var timestamp = (new Date()).valueOf();
                 if (getMsgStatus === 0) {
                     checkMsgAjax = $.ajax({
-                        url: '/vchat/get',
+                        url: '/vchat/get/' + Math.random(),
                         type: 'GET',
                         dataType: 'json',
                         data: {
