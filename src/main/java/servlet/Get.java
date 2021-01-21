@@ -57,7 +57,8 @@ public class Get extends HttpServlet {
             message = "fail";
         } else {
             String sign = Chat.renewSign(id2, uid);
-            while (AppSettings.APP_RUNNING && User.verifyUser(uid, uuid) && (chatList = Chat.getChatByUid(id2, uid)).size() == 0) {
+            int pollCount = 0;
+            while (AppSettings.APP_RUNNING && User.verifyUser(uid, uuid) && pollCount++ < 300 && (chatList = Chat.getChatByUid(id2, uid)).size() == 0) {
                 try {
                     Thread.sleep(800);
                 } catch (Exception e) {

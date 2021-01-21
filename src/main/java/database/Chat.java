@@ -55,36 +55,50 @@ public class Chat {
         Chat.modList(null, uid, null, null, 3);
     }
 
-    private static void setUserLastChatsByUid(String uid, ArrayList<String> lastChats) {
+    private static void setUserLastChatsByUid(String uid, String senderId, ArrayList<String> lastChats) {
         //System.out.println("set " + lastChats.toString());
-        modChatUUIDList(uid, lastChats, 1);
+        modChatUUIDList(uid, senderId, lastChats, 1);
     }
 
-    public static void removeUserLastChatsByUid(String uid) {
-        ArrayList<String> chatUUIDList = modChatUUIDList(uid, null, 2);
+    public static void removeUserLastChatsByUid(String uid, String senderId) {
+        ArrayList<String> chatUUIDList = modChatUUIDList(uid, senderId, null, 2);
         modList(null, null, null, chatUUIDList, 4);
         //System.out.println("remove " + chatUUIDList.toString());
-        modChatUUIDList(uid, null, 1);
+        modChatUUIDList(uid, senderId, null, 1);
     }
 
     public static void resetUserLastChatsByUid(String uid) {
-        modChatUUIDList(uid, null, 1);
+        modChatUUIDList(uid, null, null, 1);
     }
 
-    private static synchronized ArrayList<String> modChatUUIDList(String uid, ArrayList<String> lastChats,
+    private static synchronized ArrayList<String> modChatUUIDList(String uid, String senderId, ArrayList<String> lastChats,
                                                                   int operationType) {
         // 1. 设置lastChats
         // 2. 获取lastChats
         ArrayList<String> lastChatsData = null;
+        String chatUserIds;
         switch (operationType) {
             case 1:
                 if (lastChats == null) {
-                    lastChats = new ArrayList<>();
+                    ArrayList<String> list = new ArrayList<>();
+                    for (Entry<String, ArrayList<String>> entry : userLastGetChats.entrySet()) {
+                        if (entry.getKey().matches(".*?\\|" + uid + "$")
+                                || entry.getKey().matches("^" + uid + "\\|.*?")) {
+                            list.add(entry.getKey());
+                        }
+                    }
+                    for (String uuid : list
+                    ) {
+                        userLastGetChats.remove(uuid);
+                    }
+                    break;
                 }
-                userLastGetChats.put(uid, lastChats);
+                chatUserIds = uid + "|" + senderId;
+                userLastGetChats.put(chatUserIds, lastChats);
                 break;
             case 2:
-                lastChatsData = userLastGetChats.get(uid);
+                chatUserIds = uid + "|" + senderId;
+                lastChatsData = userLastGetChats.get(chatUserIds);
                 break;
             default:
                 break;
@@ -119,7 +133,8 @@ public class Chat {
                     }
                 }
                 chatList.sort((o1, o2) -> (int) (o1.getTime() - o2.getTime()));
-                setUserLastChatsByUid(id2, list);
+//                System.out.println("set " + id2 + " " + id1 + " " + list);
+                setUserLastChatsByUid(id2, id1, list);
                 break;
             case 3:
                 ArrayList<String> tempList = new ArrayList<>();
@@ -134,6 +149,7 @@ public class Chat {
                 }
                 break;
             case 4:
+//                System.out.println("remove " + chatUUIDList);
                 for (String chatUUID : chatUUIDList) {
                     chatDataList.remove(chatUUID);
                 }

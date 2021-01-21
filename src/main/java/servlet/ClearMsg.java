@@ -30,11 +30,12 @@ public class ClearMsg extends HttpServlet {
         response.setCharacterEncoding("utf-8");
         String uid = request.getParameter("uid");
         String uuid = request.getParameter("uuid");
+        String id2 = request.getParameter("id2");
         JSONObject json = new JSONObject();
         int code = 0;
         String message = "ok";
         boolean invalid = false;
-        if (MyStringUtil.empty(uid) || MyStringUtil.empty(uuid)) {
+        if (MyStringUtil.empty(uid) || MyStringUtil.empty(uuid) || MyStringUtil.empty(id2)) {
             code = 1001;
             invalid = true;
         }
@@ -47,7 +48,7 @@ public class ClearMsg extends HttpServlet {
         if (invalid) {
             message = "fail";
         } else {
-            Chat.removeUserLastChatsByUid(uid);
+            Chat.removeUserLastChatsByUid(uid, id2);
         }
         json.put("code", code);
         json.put("msg", message);
